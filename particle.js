@@ -61,6 +61,7 @@ class Particle {
         CTX.lineWidth = 1;
     }
     look(lines) {
+        const scene = [];
         for (const ray of this.rays) {
             let closest = null;
             let record = Infinity;
@@ -77,7 +78,11 @@ class Particle {
             if (closest != null) {
                 // Ray.drawPoints(closest, 2);
                 Ray.drawLines(this.position, closest);
+                scene.push(record);
+            } else {
+                scene.push(Infinity);
             }
         }
+        return scene;
     }
 }

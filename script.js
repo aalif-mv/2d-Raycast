@@ -1,11 +1,16 @@
 const canvas = document.getElementById('canvas');
 const CTX = canvas.getContext('2d');
 
+const canvas2 = document.getElementById('canvas2');
+const CTX2 = canvas2.getContext('2d');
+
 const Obstacles = [];
-const particle = new Particle(new Vector2(200, 200), 100, 90, 0); // 500 max performance density
+const particle = new Particle(new Vector2(200, 200), 150, 45, 0); // 500 max performance density
 const keyMap = new Map();
 
-let No = 10;
+const maxViewDistance = 1000;
+
+let No = 4;
 let mouse = new Vector2()
 
 draw_Obstacles = function() {
@@ -32,6 +37,7 @@ init = function() {
 
 mainLoop = function() {
     CTX.clearRect(0, 0, canvas.width, canvas.height);
+    CTX2.clearRect(0, 0, canvas2.width, canvas2.height);
     Performance.start();
     const particleFovAngles = {fr: particle.rays[0].angle, lr: particle.rays[particle.rays.length - 1].angle};
     let lines = [];
@@ -84,10 +90,19 @@ mainLoop = function() {
                 break;
         }
     }
-    particle.look(lines);
+    const scene = particle.look(lines);
     Performance.end();
     particle.move();
     draw_Obstacles();
+    for (let i = 0, x = 0; i < scene.length; i++, x += (canvas2.width / particle.rays.length)) {
+        // let len = scene[i] * Math.sin(particle.rays[i].angle);
+        // console.log(particle.angle , particle.rays[i].angle)
+        let color = scale(scene[i], 0, maxViewDistance, 180, 0);
+        let height = scale(scene[i], 0, maxViewDistance, canvas.height / 2, 10);
+        CTX2.fillStyle = 'rgb(' + color + ',' + color + ',' + color + ')';
+        console.log(color);
+        CTX2.fillRect(x, (canvas.height / 2) - (height / 2), (canvas2.width / particle.rays.length), height);
+    }
     // requestAnimationFrame(mainLoop);
 }
 
